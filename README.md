@@ -2,27 +2,8 @@
 
 A full-stack URL shortener application built with **Node.js**, **Express**, and **MySQL**, deployed on **Render** with a remote cloud database managed on **Aiven**.
 
-URL Shortener/
-├── controller/
-│   ├── get.controller.js       # Logic for handling URL redirections & retrieval
-│   └── post.controller.js      # Logic for creating new short code mappings
-├── db/
-│   └── db.js                   # MySQL connection configuration & SSL setup
-├── public/
-│   ├── index.html              # User interface structure
-│   ├── script.js               # Frontend JavaScript for API calls (Fetch API)
-│   └── style.css               # Application styling
-├── router/
-│   ├── get.router.js           # GET routes definition
-│   └── post.router.js          # POST routes definition
-├── src/                        # Source assets or helper files
-├── .env                        # Local environment variables (ignored in Git)
-├── .gitignore                  # Git tracking exclusion list
-├── app.js                      # Express application setup & middleware configuration
-├── backup.sql                  # Database schema backup
-├── package.json                # Project dependencies and scripts
-├── package-lock.json           # Dependency lockfile
-└── server.js                   # Application entry point & server listener
+🌐 **Live Demo:** [url-shortener-3-9xok.onrender.com](https://url-shortener-3-9xok.onrender.com/)
+
 
 🧠 Concepts & Learnings
 Through building and deploying this project, I gained hands-on experience in:
