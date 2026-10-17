@@ -1,6 +1,5 @@
 # 🔗 URL Shortener Web Application
-
-A full-stack URL shortener application built with **Node.js**, **Express**, and **MySQL**, deployed on **Render** with a remote cloud database managed on **Aiven**.
+Hello guys , just started on my web development journey ....and I have built a basic full-stack URL shortener application built with **Node.js**, **Express**, and **MySQL**, deployed on **Render** with a remote cloud database managed on **Aiven**.
 
 🌐 **Live Demo:** [url-shortener-3-9xok.onrender.com](https://url-shortener-3-9xok.onrender.com/)
 
