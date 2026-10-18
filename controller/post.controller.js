@@ -12,7 +12,14 @@ function returnurl(req, res) {
     }
 
     const shortCode = crypto.randomBytes(4).toString("hex");
+      const shortUrl = `${req.protocol}://${req.get("host")}/${shortCode}`;
 
+    // If the original URL is shorter, don't store anything
+    if (shortUrl.length >= originalUrl.length) {
+        return res.status(200).json({
+            shortUrl: originalUrl
+        });
+    }
     const sql = "INSERT INTO urls (original_url, shortened_url) VALUES (?, ?)";
 
     db.query(sql, [originalUrl, shortCode], (err, result) => {
@@ -24,7 +31,6 @@ function returnurl(req, res) {
         }
 
         const shortUrl = `${req.protocol}://${req.get("host")}/${shortCode}`;
-
         res.status(201).json({
             shortUrl: shortUrl
         });
