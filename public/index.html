@@ -22,6 +22,35 @@
 
     <p id="message"></p>
 </div>
+
+<section class="links-section">
+    <h2>Your Recent Links</h2>
+    <p>View and manage all your shortened URLs.</p>
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search your URLs..."
+    >
+
+    <p id="historyMessage">Loading links...</p>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Short URL</th>
+                    <th>Created At</th>
+                    <th>Clicks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="urlTable"></tbody>
+        </table>
+    </div>
+</section>
+
 <script src="script.js"></script>
 </body>
 </html>

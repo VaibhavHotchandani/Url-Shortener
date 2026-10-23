@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <header>
+        <h1>LinkBoard</h1>
+        <a href="/">URL Shortener</a>
+    </header>
+
+    <main>
+        <h2>Dashboard</h2>
+        <p class="subtitle">Track and manage your shortened URLs.</p>
+
+        <section class="stats">
+            <div class="stat-card">
+                <p>Total URLs</p>
+                <h2 id="totalUrls">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Total Clicks</p>
+                <h2 id="totalClicks">0</h2>
+            </div>
+        </section>
+
+        <section class="links-section">
+            <h2>Your Links</h2>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search your URLs..."
+            >
+
+            <p id="message">Loading links...</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Original URL</th>
+                            <th>Short URL</th>
+                            <th>Created At</th>
+                            <th>Clicks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="urlTable">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
