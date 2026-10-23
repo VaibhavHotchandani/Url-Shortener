@@ -1,77 +1,92 @@
 
-let urlInput = document.getElementById("urlInput");
-let shortenBtn = document.getElementById("shortenBtn");
-let shortUrl = document.getElementById("shortUrl");
-let copyBtn = document.getElementById("copyBtn");
-let result = document.getElementById("result");
-let historymessagemessage = document.getElementById("historymessage");
-
-shortenBtn.addEventListener("click", async function () {
-    let originalUrl = urlInput.value.trim();
-
-    if (originalUrl === "") {
-        message.textContent = "Please enter a URL";
-        result.style.display = "none";
-        return;
-    }
-
-    try {
-        let response = await fetch("/result", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                originalUrl: originalUrl
-            })
-        });
-
-        let data = await response.json();
-
-        if (!response.ok) {
-            message.textContent = data.message;
-            result.style.display = "none";
-            return;
-        }
-
-        shortUrl.value = data.shortUrl;
-        result.style.display = "flex";
-        message.textContent = "URL shortened successfully!";
-
-    } catch (error) {
-        message.textContent = "Something went wrong. Please try again.";
-        console.log(error);
-    }
-});
-
-copyBtn.addEventListener("click", async function () {
-    try {
-        await navigator.clipboard.writeText(shortUrl.value);
-        message.textContent = "URL copied!";
-    } catch (error) {
-        message.textContent = "Unable to copy the URL.";
-        console.log(error);
-    }
-});
+const shortenForm = document.getElementById("shortenForm");
+const urlInput = document.getElementById("urlInput");
+const message = document.getElementById("message");
+const result = document.getElementById("result");
+const shortUrlLink = document.getElementById("shortUrlLink");
+const copyBtn = document.getElementById("copyBtn");
+const shortenBtn = document.getElementById("shortenBtn");
 
 const urlTable = document.getElementById("urlTable");
 const totalUrls = document.getElementById("totalUrls");
 const totalClicks = document.getElementById("totalClicks");
-const message = document.getElementById("message");
 const searchInput = document.getElementById("searchInput");
+const refreshBtn = document.getElementById("refreshBtn");
+const historyMessage = document.getElementById("historyMessage");
 
 let allUrls = [];
 
+
+// 1. Shorten a URL
+shortenForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const originalUrl = urlInput.value.trim();
+
+    try {
+        shortenBtn.disabled = true;
+        message.textContent = "Shortening URL...";
+
+        const response = await fetch("/result", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ originalUrl })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Could not shorten URL");
+        }
+
+        shortUrlLink.href = data.shortUrl;
+        shortUrlLink.textContent = data.shortUrl;
+        result.hidden = false;
+
+        message.textContent = "URL shortened successfully!";
+
+        await loadUrls();
+    } catch (error) {
+        message.textContent = error.message;
+    } finally {
+        shortenBtn.disabled = false;
+    }
+});
+
+
+// 2. Copy the newly shortened URL
+copyBtn.addEventListener("click", () => {
+    copyText(shortUrlLink.href);
+});
+
+
+// 3. Copy text to clipboard
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        message.textContent = "Copied!";
+    } catch (error) {
+        message.textContent = "Could not copy the URL.";
+    }
+}
+
+
+// 4. Get all saved URLs from the backend
 async function loadUrls() {
     try {
+        historyMessage.textContent = "Loading URLs...";
+
         const response = await fetch("/api/urls");
 
         if (!response.ok) {
-            throw new Error("Failed to fetch URLs");
+            throw new Error("Could not load URLs");
         }
 
         allUrls = await response.json();
 
+        // Calculate total URLs and total clicks
         totalUrls.textContent = allUrls.length;
 
         totalClicks.textContent = allUrls.reduce(
@@ -79,100 +94,81 @@ async function loadUrls() {
             0
         );
 
-        message.textContent = "";
-
         displayUrls(allUrls);
-
     } catch (error) {
-        console.log(error);
-        message.textContent = "Could not load URLs. Please try again.";
+        historyMessage.textContent = error.message;
     }
 }
 
+
+// 5. Display URLs in the table
 function displayUrls(urls) {
-    urlTable.replaceChildren();
+    urlTable.innerHTML = "";
 
     if (urls.length === 0) {
-        message.textContent = "No URLs found.";
+        historyMessage.textContent = "No URLs found.";
         return;
     }
 
-    message.textContent = "";
+    historyMessage.textContent = "";
 
     urls.forEach((url) => {
+        const shortUrl =
+            `${window.location.origin}/${encodeURIComponent(url.shortened_url)}`;
+
         const row = document.createElement("tr");
 
-        const originalCell = document.createElement("td");
-        originalCell.className = "original-link";
-        originalCell.textContent = url.original_url;
+        row.innerHTML = `
+            <td>${escapeHtml(url.original_url)}</td>
+            <td><a href="${shortUrl}" target="_blank">${shortUrl}</a></td>
+            <td>${url.created_at ? new Date(url.created_at).toLocaleDateString() : "—"}</td>
+            <td>${Number(url.clicks || 0)}</td>
+            <td><button class="copy-button">Copy</button></td>
+        `;
 
-        const shortCell = document.createElement("td");
-        const shortAnchor = document.createElement("a");
+        const copyButton = row.querySelector(".copy-button");
 
-        const shortUrl =
-            window.location.origin + "/" + url.shortened_url;
-
-        shortAnchor.href = shortUrl;
-        shortAnchor.textContent = shortUrl;
-        shortAnchor.className = "short-link";
-        shortAnchor.target = "_blank";
-        shortAnchor.rel = "noopener noreferrer";
-
-        shortCell.appendChild(shortAnchor);
-
-        const dateCell = document.createElement("td");
-        dateCell.textContent = url.created_at
-            ? new Date(url.created_at).toLocaleDateString()
-            : "Unknown";
-
-        const clicksCell = document.createElement("td");
-        clicksCell.textContent = url.clicks ?? 0;
-
-        const actionCell = document.createElement("td");
-        const copyButton = document.createElement("button");
-
-        copyButton.textContent = "Copy";
-
-        copyButton.addEventListener("click", async () => {
-            try {
-                await navigator.clipboard.writeText(shortUrl);
-                copyButton.textContent = "Copied!";
-
-                setTimeout(() => {
-                    copyButton.textContent = "Copy";
-                }, 1500);
-            } catch (error) {
-                console.log(error);
-                alert("Could not copy the URL.");
-            }
+        copyButton.addEventListener("click", () => {
+            copyText(shortUrl);
         });
-
-        actionCell.appendChild(copyButton);
-
-        row.append(
-            originalCell,
-            shortCell,
-            dateCell,
-            clicksCell,
-            actionCell
-        );
 
         urlTable.appendChild(row);
     });
 }
 
+
+// 6. Search URLs
 searchInput.addEventListener("input", () => {
     const searchText = searchInput.value.toLowerCase();
 
-    const filteredUrls = allUrls.filter((url) => {
-        return (
-            url.original_url.toLowerCase().includes(searchText) ||
-            url.shortened_url.toLowerCase().includes(searchText)
-        );
-    });
+    const filteredUrls = allUrls.filter((url) =>
+        url.original_url.toLowerCase().includes(searchText) ||
+        url.shortened_url.toLowerCase().includes(searchText)
+    );
 
     displayUrls(filteredUrls);
 });
 
-loadUrls();
 
+// 7. Refresh the URL table
+refreshBtn.addEventListener("click", loadUrls);
+
+
+// 8. Prevent URL text from being treated as HTML
+function escapeHtml(text) {
+    const replacements = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    };
+
+    return String(text || "").replace(/[&<>"']/g, (character) => {
+        return replacements[character];
+    });
+}
+
+
+// 9. Load saved URLs when the page opens
+loadUrls();
