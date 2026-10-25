@@ -1,27 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="theme-color" content="#f7f8fc">
+    <title>LinkBoard | URL Shortener</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-    <h1>URL Shortener</h1>
+    <header class="topbar">
+        <a class="brand" href="/" aria-label="LinkBoard home"><span class="brand-mark">↗</span> LinkBoard</a>
+        <span class="topbar-note">Simple links. Clear insights.</span>
+    </header>
 
-    <input id="urlInput" type="url"
-           placeholder="Enter your long URL">
+    <main class="page-shell">
+        <section class="intro">
+            <p class="eyebrow">YOUR LINK WORKSPACE</p>
+            <h1>Make long links <span>shorter.</span></h1>
+            <p class="intro-copy">Create a shareable link and keep track of how it performs.</p>
+        </section>
 
-    <button id="shortenBtn">Shorten URL</button>
+        <section class="shortener-card" aria-labelledby="shortener-heading">
+            <div class="section-heading">
+                <div><p class="eyebrow">GET STARTED</p><h2 id="shortener-heading">Shorten a URL</h2></div>
+                <span class="heading-icon" aria-hidden="true">↗</span>
+            </div>
+            <form id="shortenForm" class="shorten-form">
+                <label for="urlInput">Destination URL</label>
+                <div class="input-row">
+                    <input id="urlInput" type="url" placeholder="https://example.com/your/very/long/link" required>
+                    <button id="shortenBtn" type="submit">Shorten link <span aria-hidden="true">→</span></button>
+                </div>
+            </form>
+            <p id="message" class="message" role="status" aria-live="polite"></p>
+            <div id="result" class="result-box" hidden>
+                <div class="result-copy"><span class="result-label">YOUR SHORT LINK</span><a id="shortUrlLink" href="#" target="_blank" rel="noopener noreferrer"></a></div>
+                <button id="copyBtn" class="button-secondary" type="button">Copy link</button>
+            </div>
+        </section>
 
-    <div id="result">
-        <input id="shortUrl" readonly>
-        <button id="copyBtn">Copy</button>
-    </div>
+        <section class="stats-grid" aria-label="Link statistics">
+            <article class="stat-card"><div class="stat-top"><span>Total links</span><span class="stat-icon">↗</span></div><p id="totalUrls" class="stat-number">—</p><p class="stat-caption">Links saved in your workspace</p></article>
+            <article class="stat-card"><div class="stat-top"><span>Total clicks</span><span class="stat-icon clicks-icon">⌁</span></div><p id="totalClicks" class="stat-number">—</p><p class="stat-caption">Clicks across all saved links</p></article>
+        </section>
 
-    <p id="message"></p>
-</div>
-<script src="script.js"></script>
+        <section class="links-section" aria-labelledby="links-heading">
+            <div class="links-header"><div><p class="eyebrow">OVERVIEW</p><h2 id="links-heading">Your links</h2><p class="section-copy">Search, open, or copy any link you've created.</p></div><button id="refreshBtn" class="button-secondary refresh-button" type="button">↻ Refresh</button></div>
+            <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="searchInput" placeholder="Search original or short URL..." aria-label="Search URLs"></div>
+            <p id="historyMessage" class="history-message" role="status" aria-live="polite">Loading your links…</p>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Destination</th><th>Short link</th><th>Created</th><th>Clicks</th><th>Action</th></tr></thead>
+                    <tbody id="urlTable"></tbody>
+                </table>
+            </div>
+            <p class="table-footnote" id="tableFootnote"></p>
+        </section>
+        <footer>LinkBoard <span>·</span> A simple workspace for your shortened URLs</footer>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>
